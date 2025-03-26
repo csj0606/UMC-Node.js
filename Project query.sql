@@ -2,19 +2,31 @@ DROP TABLE if exists user;
 CREATE TABLE user (
                       id BIGINT not null,
                       name VARCHAR(20) not null,
-                      email VARCHAR(20) not null,
                       pw VARCHAR(20) not null,
-                      locate VARCHAR(20) not null,
-                      gender smallint not null,
-                      birth VARCHAR(20) not null,
-                      phone_num VARCHAR(20) not null,
                       status VARCHAR(10) null,
                       craeted_time DATETIME(6) not null,
                       updated_time DATETIME(6) not null,
                       inactive_date DATETIME(6) null,
                       PRIMARY KEY (id)
 );
-desc user;
+
+DROP TABLE if exists user_info;
+CREATE TABLE user_info (
+	id BIGINT not null,
+	user_id BIGINT not null unique,
+    profile_picture_url varchar(255) not null,
+	email VARCHAR(20) not null,
+	locate VARCHAR(20) not null,
+	gender smallint not null,
+	birth VARCHAR(20) not null,
+	phone_num VARCHAR(20) not null,
+    phone_num_certificated BOOLEAN not null,
+	nickname VARCHAR(50) null default 'NICKNAME123',
+	craeted_time DATETIME(6) not null,
+	updated_time DATETIME(6) not null,
+	PRIMARY KEY (id),
+    foreign key (user_id) references user(id)
+);
 
 #SNS 로그인 시 정보 저장 테이블
 CREATE TABLE user_token (
@@ -60,6 +72,38 @@ CREATE TABLE food_category(
                               primary key (id)
 );
 
+drop table if exists region;
+create table region(
+                       id bigint not null ,
+                       name varchar(20) not null ,
+                       craeted_time DATETIME(6) not null,
+                       updated_time DATETIME(6) not null,
+                       primary key (id)
+);
+
+drop table if exists store;
+create table store(
+                      id bigint not null ,
+                      name varchar(50) not null,
+                      region_id bigint not null ,
+                      food_category_id bigint not null ,
+                      craeted_time DATETIME(6) not null,
+                      updated_time DATETIME(6) not null,
+                      primary key (id),
+                      foreign key (region_id) references region(id),
+                      foreign key (food_category_id) references food_category(id)
+);
+
+drop table if exists store_picture;
+create table store_picture(
+                              id bigint not null ,
+                              store_id bigint not null ,
+                              craeted_time DATETIME(6) not null,
+                              updated_time DATETIME(6) not null,
+                              primary key (id),
+                              foreign key (store_id) references store(id)
+);
+
 drop table if exists prefer_food;
 create TABLE prefer_food(
                             user_id bigint not null ,
@@ -75,8 +119,10 @@ CREATE TABLE mission(
                         id bigint not null ,
                         store_id bigint not null ,
                         name varchar(50) not null ,
+                        payment int not null,
                         craeted_time DATETIME(6) not null,
                         updated_time DATETIME(6) not null,
+                        point int not null,
                         primary key (id),
                         foreign key (store_id) references store(id)
 );
@@ -87,6 +133,7 @@ CREATE TABLE user_mission(
                              mission_id bigint not null ,
                              craeted_time DATETIME(6) not null,
                              updated_time DATETIME(6) not null,
+                             is_completed boolean	not null,
                              foreign key (user_id) references user(id),
                              foreign key (mission_id) references mission(id)
 );
@@ -209,7 +256,7 @@ create table review_alert(
 );
 
 drop table if exists event_alert;
-create table mission_alert(
+create table event_alert(
                               id bigint not null ,
                               alert_id bigint not null ,
                               craeted_time DATETIME(6) not null,
@@ -218,35 +265,7 @@ create table mission_alert(
                               primary key (id)
 );
 
-drop table if exists region;
-create table region(
-                       id bigint not null ,
-                       name varchar(20) not null ,
-                       craeted_time DATETIME(6) not null,
-                       updated_time DATETIME(6) not null,
-                       primary key (id)
-);
 
-drop table if exists store;
-create table store(
-                      id bigint not null ,
-                      region_id bigint not null ,
-                      food_category_id bigint not null ,
-                      craeted_time DATETIME(6) not null,
-                      updated_time DATETIME(6) not null,
-                      primary key (id),
-                      foreign key (region_id) references region(id),
-                      foreign key (food_category_id) references food_category(id)
-);
-desc store;
 
-drop table if exists store_picture;
-create table store_picture(
-                              id bigint not null ,
-                              store_id bigint not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              primary key (id),
-                              foreign key (store_id) references store(id)
-);
+
 
