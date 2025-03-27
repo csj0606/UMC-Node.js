@@ -5,11 +5,12 @@ SELECT
     m.payment,
     s.name,
     fk.name,
+    datediff(um.created_time, new()),
     DATE_FORMAT(um.created_time, '%Y%m%d%H%i%s') AS cursor #미션의 생성 시간(유저 기준)을 기준으로 정렬하여 사용
 from
-	user_mission as um
+	 mission as m on m.id = um.mission_id
 join
-	mission as m on m.id = um.mission_id
+	 user_mission as um
 join
 	store as s on s.id = m.store_id
 join

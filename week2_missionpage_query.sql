@@ -12,11 +12,11 @@ join
 join 
 	store as s on m.store_id = s.id
 where 
-    CONCAT(LPAD(m.point, 10, '0'), '-', DATE_FORMAT(um.created_time, '%Y%m%d%H%i%s')) < '이전 커서값' #최근의 미션을 cursor로 새로 페이징
+    CONCAT(LPAD(m.point, 10, '0'), DATE_FORMAT(um.created_time, '%Y%m%d%H%i%s')) < '이전 커서값' #최근의 미션을 cursor로 새로 페이징
 and
 	um.user_id = 3 #사용자의 아이디
 and 
 	um.is_completed = 1  # 미션의 진행중/진행완료 여부 (0 or 1)
 order by
 	cursor DESC #cursor값을 사용해 정렬 (1. 포인트, 2. 최근 순 정렬)
-limit 10; #한번에 보여잘 개수
+limit 10; #한번에 보여질 개수
