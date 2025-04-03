@@ -1,16 +1,15 @@
-DROP TABLE if exists user;
 CREATE TABLE user (
                       id BIGINT not null,
                       name VARCHAR(20) not null,
                       pw VARCHAR(20) not null,
                       status VARCHAR(10) null,
+                      point int not null,
                       craeted_time DATETIME(6) not null,
                       updated_time DATETIME(6) not null,
                       inactive_date DATETIME(6) null,
                       PRIMARY KEY (id)
 );
 
-DROP TABLE if exists user_info;
 CREATE TABLE user_info (
 	id BIGINT not null,
 	user_id BIGINT not null unique,
