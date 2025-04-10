@@ -1,267 +1,280 @@
-CREATE TABLE user (
-                      id BIGINT not null,
-                      name VARCHAR(20) not null,
-                      pw VARCHAR(20) not null,
-                      status VARCHAR(10) null,
-                      point int not null,
-                      craeted_time DATETIME(6) not null,
-                      updated_time DATETIME(6) not null,
-                      inactive_date DATETIME(6) null,
-                      PRIMARY KEY (id)
+USE umc_db;
+
+DROP TABLE IF EXISTS `user`;
+
+CREATE TABLE `user` (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    pw VARCHAR(20) NOT NULL,
+    status VARCHAR(10) NULL,
+    point INT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    inactive_date DATETIME(6) NULL,
+    PRIMARY KEY (id)
 );
 
 CREATE TABLE user_info (
-	id BIGINT not null,
-	user_id BIGINT not null unique,
-    profile_picture_url varchar(255) not null,
-	email VARCHAR(20) not null,
-	locate VARCHAR(20) not null,
-	gender smallint not null,
-	birth VARCHAR(20) not null,
-	phone_num VARCHAR(20) not null,
-    phone_num_certificated BOOLEAN not null,
-	nickname VARCHAR(50) null default 'NICKNAME123',
-	craeted_time DATETIME(6) not null,
-	updated_time DATETIME(6) not null,
-	PRIMARY KEY (id),
-    foreign key (user_id) references user(id)
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL UNIQUE,
+    profile_picture_url VARCHAR(255) NOT NULL,
+    email VARCHAR(20) NOT NULL,
+    locate VARCHAR(20) NOT NULL,
+    gender SMALLINT NOT NULL,
+    birth VARCHAR(20) NOT NULL,
+    phone_num VARCHAR(20) NOT NULL,
+    phone_num_certificated BOOLEAN NOT NULL,
+    nickname VARCHAR(50) NULL DEFAULT 'NICKNAME123',
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id)
 );
 
-#SNS 로그인 시 정보 저장 테이블
 CREATE TABLE user_token (
-                            id BIGINT not null,
-                            user_id BIGINT not null ,
-                            access_token VARCHAR(255) not null ,
-                            refresh_token VARCHAR(255) not null ,
-                            craeted_time DATETIME(6) not null,
-                            updated_time DATETIME(6) not null,
-                            category VARCHAR(50) not null ,
-                            primary key (id),
-                            foreign key (user_id) references user(id)
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    access_token VARCHAR(255) NOT NULL,
+    refresh_token VARCHAR(255) NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    category VARCHAR(50) NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id)
 );
 
-CREATE Table term(
-                     id bigint not null ,
-                     user_id bigint not null ,
-                     name varchar(50) not null ,
-                     term_url varchar(255) not null ,
-                     craeted_time DATETIME(6) not null,
-                     updated_time DATETIME(6) not null,
-                     essential boolean not null ,
-                     primary key (id)
+CREATE TABLE term (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    term_url VARCHAR(255) NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    essential BOOLEAN NOT NULL,
+    PRIMARY KEY (id)
 );
 
-#매핑테이블
 CREATE TABLE user_term (
-                           user_id bigint not null ,
-                           term_id bigint not null ,
-                           craeted_time DATETIME(6) not null,
-                           updated_time DATETIME(6) not null,
-                           agreed boolean not null ,
-                           foreign key (user_id) references user(id),
-                           foreign key (term_id) references term(id)
+    user_id BIGINT NOT NULL,
+    term_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    agreed BOOLEAN NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (term_id)
+        REFERENCES term (id)
 );
 
-drop table if exists food_category;
-CREATE TABLE food_category(
-                              id bigint not null ,
-                              name varchar(50) not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              primary key (id)
+CREATE TABLE food_category (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id)
 );
 
-drop table if exists region;
-create table region(
-                       id bigint not null ,
-                       name varchar(20) not null ,
-                       craeted_time DATETIME(6) not null,
-                       updated_time DATETIME(6) not null,
-                       primary key (id)
+CREATE TABLE region (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(20) NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id)
 );
 
-drop table if exists store;
-create table store(
-                      id bigint not null ,
-                      name varchar(50) not null,
-                      region_id bigint not null ,
-                      food_category_id bigint not null ,
-                      craeted_time DATETIME(6) not null,
-                      updated_time DATETIME(6) not null,
-                      primary key (id),
-                      foreign key (region_id) references region(id),
-                      foreign key (food_category_id) references food_category(id)
+CREATE TABLE store (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    region_id BIGINT NOT NULL,
+    food_category_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (region_id)
+        REFERENCES region (id),
+    FOREIGN KEY (food_category_id)
+        REFERENCES food_category (id)
 );
 
-drop table if exists store_picture;
-create table store_picture(
-                              id bigint not null ,
-                              store_id bigint not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              primary key (id),
-                              foreign key (store_id) references store(id)
+CREATE TABLE store_picture (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    store_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (store_id)
+        REFERENCES store (id)
 );
 
-drop table if exists prefer_food;
-create TABLE prefer_food(
-                            user_id bigint not null ,
-                            food_category_id bigint not null ,
-                            craeted_time DATETIME(6) not null,
-                            updated_time DATETIME(6) not null,
-                            foreign key (user_id) references user(id),
-                            foreign key (food_category_id) references food_category(id)
+CREATE TABLE prefer_food (
+    user_id BIGINT NOT NULL,
+    food_category_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (food_category_id)
+        REFERENCES food_category (id)
 );
 
-drop table if exists mission;
-CREATE TABLE mission(
-                        id bigint not null ,
-                        store_id bigint not null ,
-                        name varchar(50) not null ,
-                        payment int not null,
-                        craeted_time DATETIME(6) not null,
-                        updated_time DATETIME(6) not null,
-                        point int not null,
-                        primary key (id),
-                        foreign key (store_id) references store(id)
+CREATE TABLE mission (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    store_id BIGINT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    payment INT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    point INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (store_id)
+        REFERENCES store (id)
 );
 
-drop table if exists user_mission;
-CREATE TABLE user_mission(
-                             user_id bigint not null ,
-                             mission_id bigint not null ,
-                             craeted_time DATETIME(6) not null,
-                             updated_time DATETIME(6) not null,
-                             is_completed boolean	not null,
-                             foreign key (user_id) references user(id),
-                             foreign key (mission_id) references mission(id)
+CREATE TABLE user_mission (
+    user_id BIGINT NOT NULL,
+    mission_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    is_completed BOOLEAN NOT NULL,
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (mission_id)
+        REFERENCES mission (id)
 );
 
-drop table if exists review;
-CREATE TABLE review(
-                       id bigint not null ,
-                       user_id bigint not null ,
-                       store_id bigint not null ,
-                       score int not null ,
-                       text text not null ,
-                       craeted_time DATETIME(6) not null,
-                       updated_time DATETIME(6) not null,
-                       primary key (id),
-                       foreign key (user_id) references user(id),
-                       foreign key (store_id) references store(id)
+CREATE TABLE review (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    store_id BIGINT NOT NULL,
+    score INT NOT NULL,
+    text TEXT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (store_id)
+        REFERENCES store (id)
 );
 
-drop table if exists user_review;
-CREATE TABLE user_review(
-                            user_id bigint not null ,
-                            review_id bigint not null ,
-                            craeted_time DATETIME(6) not null,
-                            updated_time DATETIME(6) not null,
-                            foreign key(user_id) references user(id),
-                            foreign key (review_id) references review(id)
+CREATE TABLE user_review (
+    user_id BIGINT NOT NULL,
+    review_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (review_id)
+        REFERENCES review (id)
 );
 
-drop table if exists inquiry;
-CREATE TABLE inquiry(
-                        id bigint not null ,
-                        user_id bigint not null ,
-                        craeted_time DATETIME(6) not null,
-                        updated_time DATETIME(6) not null,
-                        title varchar(50) not null ,
-                        text text not null ,
-                        is_completed boolean not null ,
-                        type tinyint not null , #int로 type 지정
-                        primary key (id),
-                        foreign key (user_id) references user(id)
+CREATE TABLE inquiry (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    user_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    title VARCHAR(50) NOT NULL,
+    text TEXT NOT NULL,
+    is_completed BOOLEAN NOT NULL,
+    type TINYINT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id)
 );
 
-drop table if exists inquiry_picture;
-create table inquiry_picture(
-                                id bigint not null ,
-                                inquiry_id bigint not null ,
-                                pirture varchar(255) not null ,
-                                craeted_time DATETIME(6) not null,
-                                updated_time DATETIME(6) not null,
-                                primary key (id),
-                                foreign key (inquiry_id) references inquiry(id)
+CREATE TABLE inquiry_picture (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    inquiry_id BIGINT NOT NULL,
+    picture VARCHAR(255) NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (inquiry_id)
+        REFERENCES inquiry (id)
 );
 
-drop table if exists mission_inquiry;
-create table mission_inquiry(
-                                inquiry_id bigint not null ,
-                                mission_id bigint not null ,
-                                craeted_time DATETIME(6) not null,
-                                updated_time DATETIME(6) not null,
-                                foreign key (inquiry_id) references inquiry(id),
-                                foreign key (mission_id) references mission(id)
+CREATE TABLE mission_inquiry (
+    inquiry_id BIGINT NOT NULL,
+    mission_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (inquiry_id)
+        REFERENCES inquiry (id),
+    FOREIGN KEY (mission_id)
+        REFERENCES mission (id)
 );
 
-drop table if exists review_inquiry;
-create table review_inquiry(
-                               inquiry_id bigint not null ,
-                               review_id bigint not null ,
-                               craeted_time DATETIME(6) not null,
-                               updated_time DATETIME(6) not null,
-                               foreign key (inquiry_id) references inquiry(id),
-                               foreign key (review_id) references review(id)
+CREATE TABLE review_inquiry (
+    inquiry_id BIGINT NOT NULL,
+    review_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (inquiry_id)
+        REFERENCES inquiry (id),
+    FOREIGN KEY (review_id)
+        REFERENCES review (id)
 );
 
-drop table if exists event_inquiry;
-create table event_inquiry(
-                              id bigint not null ,
-                              inquiry_id bigint not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              primary key (id),
-                              foreign key (inquiry_id) references inquiry(id)
+CREATE TABLE event_inquiry (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    inquiry_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id),
+    FOREIGN KEY (inquiry_id)
+        REFERENCES inquiry (id)
 );
 
-drop table if exists alert;
-create table alert(
-                      id bigint not null ,
-                      craeted_time DATETIME(6) not null,
-                      updated_time DATETIME(6) not null,
-                      primary key (id)
+CREATE TABLE alert (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    PRIMARY KEY (id)
 );
 
-drop table if exists user_alert;
-create table user_alert(
-                           user_id bigint not null ,
-                           alert_id bigint not null ,
-                           craeted_time DATETIME(6) not null,
-                           updated_time DATETIME(6) not null,
-                           foreign key (user_id) references user(id),
-                           foreign key (alert_id) references alert(id)
+CREATE TABLE user_alert (
+    user_id BIGINT NOT NULL,
+    alert_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (user_id)
+        REFERENCES user (id),
+    FOREIGN KEY (alert_id)
+        REFERENCES alert (id)
 );
 
-drop table if exists mission_alert;
-create table mission_alert(
-                              alert_id bigint not null ,
-                              mission_id bigint not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              foreign key (alert_id) references alert(id),
-                              foreign key (mission_id) references mission(id)
+CREATE TABLE mission_alert (
+    alert_id BIGINT NOT NULL,
+    mission_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (alert_id)
+        REFERENCES alert (id),
+    FOREIGN KEY (mission_id)
+        REFERENCES mission (id)
 );
 
-drop table if exists review_alert;
-create table review_alert(
-                             alert_id bigint not null ,
-                             review_id bigint not null ,
-                             craeted_time DATETIME(6) not null,
-                             updated_time DATETIME(6) not null,
-                             foreign key (alert_id) references alert(id),
-                             foreign key (review_id) references review(id)
+CREATE TABLE review_alert (
+    alert_id BIGINT NOT NULL,
+    review_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (alert_id)
+        REFERENCES alert (id),
+    FOREIGN KEY (review_id)
+        REFERENCES review (id)
 );
 
-drop table if exists event_alert;
-create table event_alert(
-                              id bigint not null ,
-                              alert_id bigint not null ,
-                              craeted_time DATETIME(6) not null,
-                              updated_time DATETIME(6) not null,
-                              foreign key (alert_id) references alert(id),
-                              primary key (id)
+CREATE TABLE event_alert (
+    id BIGINT NOT NULL AUTO_INCREMENT,
+    alert_id BIGINT NOT NULL,
+    created_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6),
+    updated_time DATETIME(6) NOT NULL DEFAULT CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6),
+    FOREIGN KEY (alert_id)
+        REFERENCES alert (id),
+    PRIMARY KEY (id)
 );
 
 
