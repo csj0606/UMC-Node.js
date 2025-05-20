@@ -1,30 +1,34 @@
-import { pool } from "../db.config.js";
+import { PrismaClient } from "@prisma/client";
+const prisma = new PrismaClient();
 
 export const addMission = async (data) => {
-  const conn = await pool.getConnection();
-
   try {
-    const [storeid] = await pool.query(`SELECT id FROM store WHERE name =?;`, [
-      data.store_name,
-    ]);
+    // store 이름으로 store를 먼저 조회
+    const store = await prisma.store.findFirst({
+      where: { name: data.store_name },
+    });
 
-    if (storeid.length === 0) {
-      return null; // 존재 안 하면 insert 안 함
+    if (!store) {
+      return null; // 존재하지 않으면 insert 안 함
     }
 
     const name = `${data.store_name}에서 ${data.payment}원 이상 결제하면 ${data.point}포인트 적립`;
 
-    const [result] = await pool.query(
-      `INSERT INTO mission (name,store_id,payment,point) VALUES (?, ?, ?, ?);`,
-      [name, storeid[0].id, data.payment, data.point]
-    );
+    const mission = await prisma.mission.create({
+      data: {
+        name,
+        payment: data.payment,
+        point: data.point,
+        store: {
+          connect: { id: store.id },
+        },
+      },
+    });
 
-    return result.id;
+    return mission.id;
   } catch (err) {
     throw new Error(
       `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
     );
-  } finally {
-    conn.release();
   }
 };

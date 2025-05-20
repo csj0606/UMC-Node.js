@@ -1,34 +1,64 @@
-import { pool } from "../db.config.js";
+import { prisma } from "../db.config.js";
 
 export const addStoreByRegion = async (data) => {
-  const conn = await pool.getConnection();
-
   try {
-    const [regionid] = await pool.query(
-      `SELECT id FROM region WHERE name =?;`,
-      [data.region]
-    );
+    // 1. 지역 ID 조회
+    const region = await prisma.region.findFirst({
+      where: { name: data.region },
+    });
 
-    if (regionid.length === 0) {
-      return null; // 존재 안 하면 insert 안 함
+    if (!region) {
+      return null; // 존재하지 않으면 삽입 안 함
     }
 
-    const [food_category_id] = await pool.query(
-      `SELECT id FROM food_category WHERE name = ?;`,
-      data.food_category
-    );
+    // 2. 음식 카테고리 ID 조회
+    const foodCategory = await prisma.foodcategory.findFirst({
+      where: { name: data.food_category },
+    });
 
-    const [result] = await pool.query(
-      `INSERT INTO store (name,region_id,food_category_id) VALUES (?, ?, ?);`,
-      [data.name, regionid[0].id, food_category_id[0].id]
-    );
+    if (!foodCategory) {
+      throw new Error("존재하지 않는 음식 카테고리입니다.");
+    }
 
-    return result.id;
+    // 3. Store 삽입
+    const store = await prisma.store.create({
+      data: {
+        name: data.name,
+        region: {
+          connect: { id: region.id },
+        },
+        foodcategory: {
+          connect: { id: foodCategory.id },
+        },
+      },
+    });
+
+    return store.id;
   } catch (err) {
     throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
+      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err.message})`
     );
-  } finally {
-    conn.release();
   }
+};
+
+export const getAllStoremission = async (storeId, cursor = 0) => {
+  const missions = await prisma.mission.findMany({
+    select: {
+      id: true,
+      name: true,
+      payment: true,
+      point: true,
+      created_time: true,
+    },
+    where: {
+      store_id: BigInt(storeId),
+      id: {
+        gt: BigInt(cursor),
+      },
+    },
+    orderBy: { id: "asc" },
+    take: 5,
+  });
+
+  return missions;
 };
