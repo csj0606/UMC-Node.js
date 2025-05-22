@@ -219,9 +219,10 @@ model term {
 model user {
   id            BigInt        @id @default(autoincrement())
   name          String        @db.VarChar(20)
-  pw            String        @db.VarChar(20)
+  pw            String        @db.VarChar(100)
   status        String?       @db.VarChar(10)
   point         Int
+  provider      String        @default("local") @db.VarChar(20)
   created_time  DateTime      @default(now()) @db.DateTime(6)
   updated_time  DateTime      @default(now()) @db.DateTime(6)
   inactive_date DateTime?     @db.DateTime(6)
@@ -314,4 +315,13 @@ model usertoken {
   user          user     @relation(fields: [user_id], references: [id], map: "UserToken_user_id_fkey")
 
   @@index([user_id], map: "UserToken_user_id_fkey")
+}
+
+model Session {
+  id        String   @id
+  sid       String   @unique
+  data      String   @db.VarChar(512)
+  expiresAt DateTime @map("expires_at")
+
+  @@map("session")
 }
